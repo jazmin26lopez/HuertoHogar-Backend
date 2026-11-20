@@ -1,0 +1,10 @@
+# Copia este archivo como "application-local.properties" (en la raiz del proyecto) y completa los valores.
+# application-local.properties NO se sube a Git.
+
+# Conexion a Oracle XE (usuario HUERTO_API). Cambia XE por XEPDB1 si tu servicio se llama asi.
+spring.datasource.url=jdbc:oracle:thin:@//localhost:1521/XE
+spring.datasource.username=HUERTO_API
+spring.datasource.password=ESCRIBE_AQUI_TU_CONTRASENA
+
+# Secreto para firmar los JWT: minimo 32 caracteres, escribe uno propio.
+app.jwt.secret=ESCRIBE_AQUI_UN_SECRETO_LARGO_DE_AL_MENOS_32_CARACTERES
