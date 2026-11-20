@@ -34,7 +34,7 @@ Roles: `Administrador`, `Vendedor` y `Cliente`.
 | `POST /api/v1/auth/login`, `POST /api/v1/auth/registro` | Todos (el registro siempre crea un Cliente) |
 | `GET /api/v1/auth/me`, `POST /api/v1/auth/refresh` | Cualquier usuario con sesion |
 | `GET` productos y categorias | Todos |
-| `POST`, `PUT`, `DELETE` productos y categorias | Administrador y Vendedor |
+| `POST`, `PUT`, `DELETE` productos y categorias | Solo Administrador (el Vendedor solo consulta) |
 | `POST /api/v1/boletas` (comprar) | Cualquier usuario con sesion |
 | `GET /api/v1/boletas` | Administrador y Vendedor |
 | `/api/v1/usuarios` | Solo Administrador |

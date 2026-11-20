@@ -2,6 +2,8 @@ package com.example.huertoHogar_Backend.seguridad;
 
 import com.example.huertoHogar_Backend.auth.AuthController;
 import com.example.huertoHogar_Backend.auth.AuthService;
+import com.example.huertoHogar_Backend.boleta.BoletaController;
+import com.example.huertoHogar_Backend.boleta.BoletaService;
 import com.example.huertoHogar_Backend.config.SecurityConfig;
 import com.example.huertoHogar_Backend.producto.ProductoController;
 import com.example.huertoHogar_Backend.producto.ProductoService;
@@ -32,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(controllers = {
         UsuarioController.class, ProductoController.class,
-        AuthController.class})
+        BoletaController.class, AuthController.class})
 @Import({SecurityConfig.class, JwtService.class})
 @TestPropertySource(properties = {
         "app.jwt.secret=secreto-de-prueba-con-mas-de-32-caracteres-1234",
@@ -45,6 +47,7 @@ class SeguridadRolesTest {
     @MockitoBean UsuarioRepository usuarioRepository;
     @MockitoBean UsuarioService usuarioService;
     @MockitoBean ProductoService productoService;
+    @MockitoBean BoletaService boletaService;
     @MockitoBean AuthService authService;
 
     /** Crea un usuario "en la BD" y devuelve su cabecera Authorization. */
@@ -117,10 +120,38 @@ class SeguridadRolesTest {
     }
 
     @Test
-    void vendedorSiPuedeEliminarProductos() throws Exception {
+    void vendedorNoPuedeEliminarNiCrearProductos() throws Exception {
+        String token = tokenDe(2, "Vendedor");
+
         mvc.perform(delete("/api/v1/productos/1")
-                        .header("Authorization", tokenDe(2, "Vendedor")))
+                        .header("Authorization", token))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(post("/api/v1/productos")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void administradorSiPuedeEliminarProductos() throws Exception {
+        mvc.perform(delete("/api/v1/productos/1")
+                        .header("Authorization", tokenDe(3, "Administrador")))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void vendedorPuedeVerLasBoletasPeroElClienteNo() throws Exception {
+        when(boletaService.listarBoletas()).thenReturn(List.of());
+
+        mvc.perform(get("/api/v1/boletas")
+                        .header("Authorization", tokenDe(2, "Vendedor")))
+                .andExpect(status().isOk());
+
+        mvc.perform(get("/api/v1/boletas")
+                        .header("Authorization", tokenDe(1, "Cliente")))
+                .andExpect(status().isForbidden());
     }
 
     @Test

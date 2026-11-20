@@ -98,13 +98,13 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Crear, editar y eliminar productos y categorias:
-                        // solo Administrador y Vendedor
+                        // solo Administrador (el Vendedor unicamente consulta)
                         .requestMatchers(
                                 "/api/v1/categorias",
                                 "/api/v1/categorias/**",
                                 "/api/v1/productos",
                                 "/api/v1/productos/**"
-                        ).hasAnyRole(ADMIN, VENDEDOR)
+                        ).hasRole(ADMIN)
 
                         // Gestion de usuarios: solo Administrador
                         .requestMatchers("/api/v1/usuarios", "/api/v1/usuarios/**")
