@@ -3,8 +3,11 @@ package com.example.huertoHogar_Backend.boleta;
 
 import com.example.huertoHogar_Backend.producto.ProductoModel;
 import com.example.huertoHogar_Backend.producto.ProductoRepository;
+import com.example.huertoHogar_Backend.seguridad.UsuarioAutenticado;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -183,8 +186,8 @@ public class BoletaService {
                         .toUpperCase()
         );
 
-        // Compra como invitado hasta integrar JWT
-        boleta.setUsuarioId(null);
+        // La boleta queda ligada al usuario que inicio sesion (viene del token JWT)
+        boleta.setUsuarioId(obtenerUsuarioLogueado());
 
         boleta.setEstado(aprobada ? "PAGADA" : "FALLIDA");
         boleta.setNombreCliente(solicitud.nombreCliente().trim());
@@ -242,6 +245,19 @@ public class BoletaService {
                 ));
 
         return conDetalles(boleta);
+    }
+
+    // Id del usuario autenticado, o null si no hay sesion
+    private Long obtenerUsuarioLogueado() {
+        Authentication autenticacion =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (autenticacion != null &&
+                autenticacion.getPrincipal() instanceof UsuarioAutenticado usuario) {
+            return usuario.usuarioId();
+        }
+
+        return null;
     }
 
     private RespuestaBoleta conDetalles(BoletaModel boleta) {
