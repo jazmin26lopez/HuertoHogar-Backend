@@ -31,6 +31,7 @@ public class BoletaController {
     @Operation(
             summary = "Registrar compra",
             description = "Registra una compra asociada al usuario autenticado. " +
+                    "Pueden comprar el Cliente y el Administrador; el Vendedor no. " +
                     "Calcula subtotales, descuentos y envío. " +
                     "Descuenta stock únicamente si el pago simulado fue aprobado. " +
                     "Un pago rechazado se registra con estado FALLIDA."
@@ -48,6 +49,11 @@ public class BoletaController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Usuario no autenticado",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "El rol del usuario (Vendedor) no puede comprar",
                     content = @Content
             ),
             @ApiResponse(
