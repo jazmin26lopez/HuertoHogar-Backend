@@ -135,6 +135,30 @@ class SeguridadRolesTest {
     }
 
     @Test
+    void vendedorNoPuedeComprar() throws Exception {
+        mvc.perform(post("/api/v1/boletas")
+                        .header("Authorization", tokenDe(2, "Vendedor"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void clienteYAdministradorSiPuedenComprar() throws Exception {
+        mvc.perform(post("/api/v1/boletas")
+                        .header("Authorization", tokenDe(1, "Cliente"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated());
+
+        mvc.perform(post("/api/v1/boletas")
+                        .header("Authorization", tokenDe(3, "Administrador"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
     void administradorSiPuedeEliminarProductos() throws Exception {
         mvc.perform(delete("/api/v1/productos/1")
                         .header("Authorization", tokenDe(3, "Administrador")))

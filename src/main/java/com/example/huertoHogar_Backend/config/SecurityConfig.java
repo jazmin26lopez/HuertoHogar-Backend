@@ -38,6 +38,7 @@ public class SecurityConfig {
 
     private static final String ADMIN = "Administrador";
     private static final String VENDEDOR = "Vendedor";
+    private static final String CLIENTE = "Cliente";
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -116,7 +117,12 @@ public class SecurityConfig {
                                 "/api/v1/boletas/**"
                         ).hasAnyRole(ADMIN, VENDEDOR)
 
-                        // Otras operaciones de la API (comprar, /auth/me,
+                        // Comprar (crear boleta): solo Cliente y Administrador.
+                        // El Vendedor unicamente consulta productos y ordenes.
+                        .requestMatchers(HttpMethod.POST, "/api/v1/boletas")
+                        .hasAnyRole(ADMIN, CLIENTE)
+
+                        // Otras operaciones de la API (/auth/me,
                         // /auth/refresh) requieren haber iniciado sesion
                         .requestMatchers("/api/**").authenticated()
 
