@@ -55,3 +55,7 @@ Al arrancar se crean 3 cuentas de demostracion si no existen (se desactivan con 
 ./mvnw test -Dtest='JwtServiceTest,AuthServiceTest,SeguridadRolesTest'
 ```
 Estas pruebas no necesitan base de datos.
+
+Para ejecutar **todas** las pruebas (`./mvnw test`, 83 en total) hay que tener Oracle encendido y el archivo
+`application-local.properties` configurado, porque la prueba `HuertoHogarBackendApplicationTests` arranca la
+aplicacion completa y se conecta a la base de datos. Sin eso, las otras 82 pasan y solo esa falla.
